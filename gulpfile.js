@@ -30,8 +30,7 @@ var path = {
         html:   'src/*.html',
         js:     'src/js/*.js',
         css:    'src/css/+(style|styles-percentage|styles-ie).less',
-        skins:  'src/css/skins/**/*.less',
-        //allimg: 'src/i/**/*.*', /*при необходимости комментировать allimg*/
+        skins:  'src/css/skins/+(blue|red|tomato|pink|purple).less',
         resimg_1:'src/i/**/*.{png,jpg,jpeg,webp,raw}',
         resimg_2:'src/i/**/*.{png,jpg,jpeg,webp,raw}',
         svg:    'src/i/**/*.svg',
@@ -43,7 +42,6 @@ var path = {
         js:     'assets/js/',
         css:    'assets/css/',
         skins:  'assets/css/skins/',
-        //allimg: 'assets/i/', /*при необходимости комментировать allimg*/
         resimg_1: 'assets/i/@1x',
         resimg_2: 'assets/i/@2x',
         svg:    'assets/i/',
@@ -55,7 +53,6 @@ var path = {
         js:     'src/js/*.js',
         css:    'src/css/**/*.less',
         skins:  'src/css/skins/**/*.less',
-        //allimg: 'src/i/**/*.*', /*при необходимости комментировать allimg*/
         resimg_1:'src/i/**/*.{png,jpg,jpeg,webp,raw}',
         resimg_2:'src/i/**/*.{png,jpg,jpeg,webp,raw}',
         svg:    'src/i/**/*.svg',
@@ -127,35 +124,6 @@ gulp.task('js:assets', function () {
         .pipe(browserSync.reload({stream: true}));
 });
 
-/*======================================================
-при необходимости комментировать allimg:assets
-gulp.task('allimg:assets', function () {
-     gulp.src(path.src.allimg)
-     // Переместим в assets
-    .pipe(gulp.dest(path.assets.allimg))
-    .pipe(browserSync.reload({stream: true}));
-});
-=======================================================*/
-/*при НЕ использовании allimg:assets необходимости комментировать*/
-gulp.task('image:assets', function () {
-    // Выберем наши картинки
-    gulp.src(path.src.img)
-      // Сожмем их
-    .pipe(imagemin([
-        imagemin.jpegtran({progressive: true}),
-        imageminJpegRecompress({
-            loops: 5,
-            min: 65,
-            max: 70,
-            quality: 'medium'
-        }),
-        imagemin.optipng({optimizationLevel: 3}),
-        pngquant({quality: '65-70', speed: 5})
-    ]))
-    // Переместим в assets
-    .pipe(gulp.dest(path.assets.img))
-});
-
 // Responsive Images
 var quality = 95; // Responsive images quality
 
@@ -213,9 +181,9 @@ gulp.task('cleanimg', function() {
     return del(['assets/i/@*'], { force: true }) // удалить все папки кроме _src gulp cleanimg
 });
 
-// Clean *.less
+// Clean @*x IMG's
 gulp.task('cleanLess', function() {
-    return del(['assets/css/**/*.less'], { force: true }) // удалить все ФАЙЛЫ LESS из папки assets
+    return del(['assets/css/**/*less'], { force: true }) // удалить все папки кроме _src gulp cleanimg
 });
 
 gulp.task('svg:assets', function () {
@@ -267,7 +235,6 @@ gulp.task('assets', [
     'js:assets',
     'css:assets',
     'skins:assets',
-   // 'allimg:assets',  /*при необходимости комментировать allimg:assets*/
     'resimg_1:assets',
     'resimg_2:assets',
     'svg:assets',
@@ -291,10 +258,6 @@ gulp.task('watch' , function() {
     watch([path.watch.js], function(event, cb) {
         gulp.start('js:assets');
     });
-    /*при необходимости комментировать allimg:assets
-    watch([path.watch.allimg], function(event, cb) {
-        gulp.start('allimg:assets');
-    }); */
     watch([path.watch.allimg], function(event, cb) {
         gulp.start('resimg_1:assets');
     });
@@ -318,13 +281,13 @@ gulp.task('browserSync',['css:assets','skins:assets' ,'js:assets'], function () 
         server: {
             baseDir: path.assets
         },
-        notify: false,
-    // online: false, // Work offline without internet connection
-    // tunnel: true, tunnel: 'projectname', // Demonstration page: http://projectname.localtunnel.me
-    //tunnel: true
+      // notify: false,
+      // online: false, // Work offline without internet connection
+      // tunnel: true, tunnel: 'myWorks', // Demonstration page: http://myWorks.localtunnel.me
+      //tunnel: true
     });
 });
-function bsReload(done) { browserSync.reload(); done(); };
+
 
 gulp.task('default', ['browserSync', 'assets', 'watch']);
 gulp.task('clean', ['cleanLess']);
